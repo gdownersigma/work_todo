@@ -1,5 +1,19 @@
 import argparse
 from datetime import date
+import json
+
+task_file = "tasks.json"
+
+
+def open_file(file_name):
+    # PARAM file_name: name of file to open
+    # function opens a json file and returns the information inside
+    try:
+        with open(file_name) as f:
+            return json.load(f)
+    except FileNotFoundError:  # error if file is not found
+        print("File not found.")
+        exit()
 
 
 def get_args():
@@ -40,6 +54,8 @@ def get_args():
 
 if __name__ == "__main__":
     args = get_args()
+    tasks = open_file(task_file)
+
     if args.command == "make":
         print(
             f"trying to create task named {args.name} with priority {args.priority} and a deadline of {args.deadline} days")
@@ -47,4 +63,5 @@ if __name__ == "__main__":
         print(
             f"trying to finish task named {args.name}")
     elif args.command == "view":
-        print(f"Attempting to show a to-do list of {args.length} items.")
+        # print(f"Attempting to show a to-do list of {args.length} items.")
+        print(tasks)

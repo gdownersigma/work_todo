@@ -1,5 +1,5 @@
 import argparse
-from datetime import date
+from datetime import datetime, timedelta
 import json
 
 task_file = "tasks.json"
@@ -14,6 +14,25 @@ def open_file(file_name):
     except FileNotFoundError:  # error if file is not found
         print("File not found.")
         exit()
+
+
+def save_file(file_name):
+    # PARAM file_name: name of file to open/save to
+    # function to save recipes to file
+    with open(file_name, "w") as f:
+        json.dump(tasks, f, indent=4)
+
+
+def add_task(name, priority, deadline, weight, filename):
+    today = datetime.today()
+    deadline = today + timedelta(days=deadline)
+    task_object = {"name": name,
+                   "priority": priority,
+                   "weight": weight,
+                   "deadline": deadline.strftime("%d-%m-%Y"),
+                   "date": today.strftime("%d-%m-%Y")}
+    tasks.append(task_object)
+    save_file(filename)
 
 
 def get_args():
@@ -34,7 +53,7 @@ def get_args():
     make_task_parser.add_argument("-w", "--weight", type=int, choices=[
                                   1, 2, 3], help="How difficult a task is to determine its weight: [1,2,3], 1 is low priority, 3 is high.", default=2)
     make_task_parser.add_argument(
-        "-d", "--deadline", default=None, help='Deadline: time until due in - days')
+        "-d", "--deadline", default=None, type=int, help='Deadline: time until due in - days')
 
     # create the finish_task subcommand
     finish_task_parser = subparsers.add_parser(
@@ -57,8 +76,10 @@ if __name__ == "__main__":
     tasks = open_file(task_file)
 
     if args.command == "make":
-        print(
-            f"trying to create task named {args.name} with priority {args.priority} and a deadline of {args.deadline} days")
+        # print(
+        # f"trying to create task named {args.name} with priority {args.priority} and a deadline of {args.deadline} days")
+        add_task(args.name, args.priority,
+                 args.deadline, args.weight, task_file)
     elif args.command == "finish":
         print(
             f"trying to finish task named {args.name}")

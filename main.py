@@ -24,14 +24,14 @@ def save_file(file_name):
 
 
 def add_task(name, priority, deadline, weight, filename):
-    today = datetime.today()
-    deadline = today + timedelta(days=deadline)
-    task_object = {"name": name,
+    today = datetime.today()  # todays date
+    deadline = today + timedelta(days=deadline)  # date of deadline
+    task_object = {"name": name,  # create dictionary
                    "priority": priority,
                    "weight": weight,
                    "deadline": deadline.strftime("%d-%m-%Y"),
                    "date": today.strftime("%d-%m-%Y")}
-    tasks.append(task_object)
+    tasks.append(task_object)  # append and save this to tasks.json
     save_file(filename)
 
 
@@ -68,6 +68,20 @@ def get_args():
     view_task_parser.add_argument(
         "-l", "--length", type=int, help="The length of the to do list", default=10)
 
+    # create the search_task subcommand
+    search_task_parser = subparsers.add_parser(
+        "search", help="Search for a task and have it printed."
+    )
+    search_task_parser.add_argument(
+        "-n", "--name", help="the name of the task you are searching for", default=None)
+    search_task_parser.add_argument(
+        "-d", "--deadline", type=int, help="How many days until the deadline?", default=None)
+    search_task_parser.add_argument(
+        "-p", "--priority", type=int, choices=[1, 2, 3], help="What is the priority of the task?", default=None)
+    search_task_parser.add_argument(
+        "-w", "--weight", type=int, choices=[1, 2, 3], help="What is the weight of the task?", default=None
+    )
+
     return master_parser.parse_args()
 
 
@@ -86,3 +100,14 @@ if __name__ == "__main__":
     elif args.command == "view":
         # print(f"Attempting to show a to-do list of {args.length} items.")
         print(tasks)
+    elif args.command == "search":
+        filters = [args.name, args.priority, args.weight, args.deadline]
+        filter_names = ['name', 'priority', 'weight', 'deadline']
+        if not any(filters):
+            print(
+                "Parser Error: Must supply at least one -n, -p, -d, -w. use -h for more help")
+            exit()
+        # create dictionary of given command,value pairs
+        given_filters = {name: value for name, value in zip(
+            filter_names, filters) if value is not None}
+        print(given_filters)

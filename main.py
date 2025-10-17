@@ -35,6 +35,15 @@ def add_task(name, priority, deadline, weight, filename):
     save_file(filename)
 
 
+def create_search_dictionary(filters):
+    filter_names = filter_names = ['name', 'priority', 'weight', 'deadline']
+    if not any(filters):
+        print("Parser Error: Must supply at least one -n, -p, -d, -w. use -h for more help")
+        exit()
+    # create & return dictionary of given command,value pairs
+    return {name: value for name, value in zip(filter_names, filters) if value is not None}
+
+
 def get_args():
     # creating the main parser
     master_parser = argparse.ArgumentParser()
@@ -101,13 +110,6 @@ if __name__ == "__main__":
         # print(f"Attempting to show a to-do list of {args.length} items.")
         print(tasks)
     elif args.command == "search":
-        filters = [args.name, args.priority, args.weight, args.deadline]
-        filter_names = ['name', 'priority', 'weight', 'deadline']
-        if not any(filters):
-            print(
-                "Parser Error: Must supply at least one -n, -p, -d, -w. use -h for more help")
-            exit()
-        # create dictionary of given command,value pairs
-        given_filters = {name: value for name, value in zip(
-            filter_names, filters) if value is not None}
-        print(given_filters)
+        conditions = create_search_dictionary(
+            [args.name, args.priority, args.weight, args.deadline])
+        print(conditions)
